@@ -4,7 +4,6 @@ BIN_DIR := bin
 LIB_DIR := lib
 LIB_HFD_DIR := $(LIB_DIR)/libhfd
 LIB_RADIAL_DIR := $(LIB_DIR)/libradial
-LIB_DSYGV_DIR := $(LIB_DIR)/libdsygv
 LIB_AMOS644_DIR := $(LIB_DIR)/libamos644
 
 NAME := bmudecay
@@ -29,16 +28,13 @@ export
 
 all: $(EXE) 
 
-libs: libhfd.a libradial.a libdsygv.a libamos644.a
+libs: libhfd.a libradial.a libamos644.a
 
 libhfd.a:
 	make -C $(LIB_HFD_DIR)
 
 libradial.a:
 	make -C $(LIB_RADIAL_DIR)
-
-libdsygv.a:
-	make -C $(LIB_DSYGV_DIR)
 
 libamos644.a:
 	make -C $(LIB_AMOS644_DIR)
