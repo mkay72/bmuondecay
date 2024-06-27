@@ -1,0 +1,12 @@
+# test input for z=8 16^O
+znucl 8
+rms 2.6991
+muon 1 -1
+nuclmodel 2
+energy_e 0.6 95
+akappa_e 1 50 
+rbox 1e-4 2.5
+nquad_r 1 64
+nquad_k 0 36
+nquad_e 0 64
+print low

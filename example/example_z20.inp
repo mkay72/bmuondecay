@@ -1,0 +1,12 @@
+# test input for z=20 40^Ca
+znucl 20
+rms 3.4776
+muon 1 -1
+nuclmodel 2
+energy_e 0.6 95
+akappa_e 1 20 
+rbox 1e-4 1.50
+nquad_r 1 64
+nquad_k 0 48
+nquad_e 0 64
+print low

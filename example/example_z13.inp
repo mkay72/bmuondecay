@@ -1,0 +1,12 @@
+# test input for z=13 27^Al
+znucl 13
+rms 3.0610
+muon 1 -1
+nuclmodel 2
+energy_e 0.6 95
+akappa_e 1 35 
+rbox 1e-4 2.00
+nquad_r 1 64
+nquad_k 0 36
+nquad_e 0 64
+print low

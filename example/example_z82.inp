@@ -1,0 +1,12 @@
+# test input for z=82 208^Pb
+znucl 82
+rms 5.5012
+muon 1 -1
+nuclmodel 2
+energy_e 0.6 90
+akappa_e 1 10 
+rbox 1e-4 0.5
+nquad_r 1 64
+nquad_k 0 32
+nquad_e 0 64
+print low

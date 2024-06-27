@@ -1,0 +1,12 @@
+# test input for z=50 118^Sn
+znucl 50
+rms 4.6393
+muon 1 -1
+nuclmodel 2
+energy_e 0.6 90
+akappa_e 1 12 
+rbox 1e-4 0.90
+nquad_r 1 64
+nquad_k 0 32
+nquad_e 0 64
+print low
