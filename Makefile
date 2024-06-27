@@ -52,5 +52,4 @@ clean_all:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
 	@$(RM) -v $(LIB_HFD_DIR)/*.o $(LIB_HFD_DIR)/*.a
 	@$(RM) -v $(LIB_RADIAL_DIR)/*.o $(LIB_RADIAL_DIR)/*.a $(LIB_RADIAL_DIR)/*.mod
-	@$(RM) -v $(LIB_DSYGV_DIR)/*.o $(LIB_DSYGV_DIR)/*.a
 	@$(RM) -v $(LIB_AMOS644_DIR)/*.o $(LIB_AMOS644_DIR)/*.a
