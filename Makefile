@@ -16,11 +16,8 @@ CC       := gcc
 FC       := gfortran
 CPPFLAGS := -Iinclude -MMD -MP
 CFLAGS   := 
-# LDFLAGS  := -L/usr/local/lib/ -L./lib/libamos644 -L./lib/libdsygv -L./lib/libradial -L./lib/libhfd -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Headers/
-LDFLAGS  := -L/usr/local/lib/ -L./lib/libamos644 -L./lib/libdsygv -L./lib/libradial -L./lib/libhfd
-# LDLIBS   := -lblas -lamos644 -ldsygv -lhfd -lradial -lm -lgfortran -framework Accelerate
-# LDLIBS   := -framework Accelerate -lamos644 -ldsygv -lhfd -lradial -lm -lgfortran 
-LDLIBS   := -lblas -lamos644 -ldsygv -lhfd -lradial -lm -lgfortran
+LDFLAGS  := -L/usr/local/lib/ -L./lib/libamos644 -L./lib/libradial -L./lib/libhfd
+LDLIBS   := -lblas -lamos644 -lhfd -lradial -lm -lgfortran
 
 export
 
