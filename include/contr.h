@@ -27,6 +27,9 @@ double complex contr_fqgrid_vgv(fqgrid_t* v1, enum CONCAT_CONJ is_conj, fqgrid_t
 
 void contr_gvg_fqg_is_valid(fqgrid_t* fqg1, fqgrid_t* fqgv, fqgrid_t* fqg2);
 
+void contr_gvf(char* name_g, enum CONCAT_CONJ is_conj, char* name_v, char* name_f, char* target);
+
+fqgrid_t* contr_gvf_fqg(fqgrid_t* fqg_g, enum CONCAT_CONJ is_conj, fqgrid_t* fqg_v, fqgrid_t* fqg_f);
 
 double complex contr_vdiaggv(char* name_v1, enum CONCAT_CONJ is_conj, char* name_g, char* name_v2);
 

@@ -1,6 +1,7 @@
 #ifndef LIBRADIAL_INTERFACE_H_INCLUDED
 #define LIBRADIAL_INTERFACE_H_INCLUDED
 
+#include "fqg_name.h"
 
 // void vpot_fermi_(double* znucl, double* rms_fm, double* mass, int* nr, double* r, double* vr);
 
@@ -13,6 +14,8 @@ double eval_dbound_radial(int z, double rms_fm, int knu, double mass, int n, int
 
 double eval_dfree_radial(int z, double rms_fm, int knu, double mass, double e, int kappa, char* name);
 
+double eval_dbound_radial_fqg_name(int z, double rms_fm, int knu, double mass, int n, int kappa, fqg_name_t* fqg_name);
 
+double eval_dfree_radial_fqg_name(int z, double rms_fm, int knu, double mass, double e, int kappa, fqg_name_t* fqg_name);
 
 #endif

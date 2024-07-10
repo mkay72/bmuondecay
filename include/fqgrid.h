@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <complex.h>
+#include "fqg_name.h"
 
 #define FQGRID_NAME_RADICAL_MAX 64
 #define FQGRID_NAME_SUFFIX_MAX 32
@@ -62,4 +63,9 @@ int count_nargs(char* str);
 void trim_leading_asterisk(char* str);
 void parse_args(char* str, int nargs, char* args[]);
 
+fqgrid_t* new_fqgrid_from_fqg_name(fqg_name_t* fqg_name);
+
+void determine_qgrid_from_fqg_name(fqgrid_t* fqgrid, fqg_name_t* fqg_name);
+
 #endif /*FQGRID_H_INCLUDED*/
+

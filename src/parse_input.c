@@ -14,6 +14,9 @@ static char input_file_name[128];
 
 extern char* yytext;
 
+extern int yylex_destroy(void);
+
+
 char* yytext_ptr;
 
 
@@ -561,13 +564,17 @@ int echo(char *file_name, FILE *dst)
     char line[MAX_LINE_LEN];
 
     f = fopen(file_name, "r");
-    if (f == NULL) {
+    if (f == NULL) 
+    {
         return 1;
     }
 
-    while (fgets(line, MAX_LINE_LEN, f) != NULL) {
+    while (fgets(line, MAX_LINE_LEN, f) != NULL) 
+    {
         fprintf(dst, " %s", line);
     }
+
+    fclose(f);
 
     return 0;
 }
@@ -657,4 +664,6 @@ int parse_input(char *file_name, options_t* options)
     }
     
     fclose(yyin);
+    yylex_destroy();
+
 }
