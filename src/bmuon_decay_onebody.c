@@ -18,6 +18,8 @@
 #include "libradial_interface.h"
 #include "options.h"
 
+#include "fqg_name.h"
+
 
 
 void pretabulate_gauss_legendre(void);
@@ -32,10 +34,10 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
 
     int l_muon = lkappa(kappa_muon);
     double j_muon = jkappa(kappa_muon);
-
-    name_t* tname_psi_mu = new_name("psi_mu(x)");
-    name_t* tname_psi_e = new_name("psi_e(x)");
-    name_t* tname_jl = new_name("j(k*x)");
+    
+    fqg_name_t* fqg_name_jl = new_fqg_name("j(x)");
+    fqg_name_t* fqg_name_psi_e = new_fqg_name("dwf:psi_e(x)");
+    fqg_name_t* fqg_name_psi_mu = new_fqg_name("dwf:psi_mu(x)");
 
 
     int inuclear_model = options->inuclear_model;
@@ -87,7 +89,8 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
         fqgrid_stack_pos_t pos_skappa = get_stack_pos();
 
         timer_start("psi_e(x)");
-        double phase = eval_dfree_radial(znucl, rms_fm, inuclear_model, 1.0, e_e-1.0, kappa_e, tname_psi_e->fullname);
+        // double phase = eval_dfree_radial(znucl, rms_fm, inuclear_model, 1.0, e_e-1.0, kappa_e, tname_psi_e->fullname);
+        double phase = eval_dfree_radial_fqg_name(znucl, rms_fm, inuclear_model, 1.0, e_e-1.0, kappa_e, fqg_name_psi_e);
         timer_stop("psi_e(x)");
 
         double transrate_kappa = 0.0;
@@ -126,12 +129,15 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
                 // evaluation of the radial R1_L(k) and R2_L(k) integrals
                 for (int l = lmin; l <= lmax; l++)
                 {
-                    modify_suffix(tname_jl, "l%d", l);
 
                     timer_start("jl(k*x)");
-                    if (find_fqgrid_stack(tname_jl->fullname) == NULL)
+
+                    set_fqg_suffix(fqg_name_jl, "l%d", l);
+
+                    if (find_fqgrid_stack(fqg_name_jl->name) == NULL)
                     {
-                        eval_sphbes_amos(SPHBES_J, (double)l, (double complex)k, tname_jl->fullname);
+                        // eval_sphbes_amos(SPHBES_J, (double)l, (double complex)k, fqg_name_jl->name);
+                        eval_sphbes_amos_fqg_name(SPHBES_J, (double)l, (double complex)k, fqg_name_jl);
                     }
                     timer_stop("jl(k*x)");
 
@@ -143,17 +149,17 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
                         // beta = -1 -> ibeta = 1
                         int ibeta = abs(beta - 1)/2;
 
-                        modify_suffix(tname_psi_e, "[%+d]", beta);
-                        modify_suffix(tname_psi_mu, "[%+d]", beta);
+                        set_fqg_sys_suffix(fqg_name_psi_e, "[%+d]", beta);
+                        set_fqg_sys_suffix(fqg_name_psi_mu, "[%+d]", beta);
 
-                        r1[ibeta][l] = creal(contr_vdiaggv(tname_psi_mu->fullname, NO_CONJ, tname_jl->fullname, tname_psi_e->fullname));
+                        r1[ibeta][l] = creal(contr_vdiaggv(fqg_name_psi_mu->name, NO_CONJ, fqg_name_jl->name, fqg_name_psi_e->name));
 
-                        modify_suffix(tname_psi_mu, "[%+d]", -beta);
+                        set_fqg_sys_suffix(fqg_name_psi_mu, "[%+d]", -beta);
 
-                        r2[ibeta][l] = creal(contr_vdiaggv(tname_psi_mu->fullname, NO_CONJ, tname_jl->fullname, tname_psi_e->fullname));
+                        r2[ibeta][l] = creal(contr_vdiaggv(fqg_name_psi_mu->name, NO_CONJ, fqg_name_jl->name, fqg_name_psi_e->name));
 
-                        modify_suffix(tname_psi_e, "");
-                        modify_suffix(tname_psi_mu, "");
+                        set_fqg_sys_suffix(fqg_name_psi_mu, "");
+                        set_fqg_sys_suffix(fqg_name_psi_e, "");
                     }
                     timer_stop("radint");
                 }
@@ -187,7 +193,7 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
                         r1sum += beta * slbeta(l, kappa_e, kappa_muon, lcapital, beta) * r1[ibeta][l] - 
                                     I * ulbeta(l, kappa_e, kappa_muon, lcapital, beta) * r2[ibeta][l];
                         r2sum += is_even(l_e + l_muon + lcapital) * r1[ibeta][lcapital] + 
-                                is_odd(l_e + l_muon + lcapital) * I * beta * r2[ibeta][lcapital];                            
+                                  is_odd(l_e + l_muon + lcapital) * I * beta * r2[ibeta][lcapital];
                     }
 
                     integral_type2_k += -2.0*creal(cpow(I, lcapital - l) * pp(l) * pp(lcapital) * cgc_mzero(lcapital, 1, l) * r1sum * r2sum);
@@ -270,9 +276,9 @@ static double partial_transrate_mu_decay(int znucl, int n_muon, int kappa_muon, 
 
     delete_qgrid(qgrid_k);
 
-    delete_name(tname_jl);
-    delete_name(tname_psi_mu);
-    delete_name(tname_psi_e);
+    delete_fqg_name(fqg_name_jl);
+    delete_fqg_name(fqg_name_psi_e);
+    delete_fqg_name(fqg_name_psi_mu);
 
 
     return transrate_tot;
@@ -312,8 +318,51 @@ int bmuon_decay_onebody(void)
     qgrid_t* qgrid_1 = new_qgrid((double[]){a, b}, 2, nsub_1, nqnode_1, "x");
     qgrid_stack_push(qgrid_1);
 
-    e_muon = eval_dbound_radial(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, "psi_mu(x)");
-   
+    fqgrid_stack_pos_t pos_start = get_stack_pos();
+
+    fqg_name_t* fqg_name_psi_mu = new_fqg_name("dwf:psi_mu(x)");
+    e_muon =  eval_dbound_radial_fqg_name(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, fqg_name_psi_mu);
+    // fqg_name_t* fqg_name1 = new_fqg_name("dwf:psi_mu1(x)");
+    // print_fqg_name(fqg_name);
+
+    // set_fqg_sys_suffix(fqg_name, "[%+d]", 1);
+    // fqgrid_t* fqg = new_fqgrid_from_fqg_name(fqg_name);
+    // push_fqgrid_stack(fqg);
+
+    // set_fqg_sys_suffix(fqg_name, "[%+d]", -1);
+    // fqg = new_fqgrid_from_fqg_name(fqg_name);
+    // push_fqgrid_stack(fqg);
+
+    // e_muon = eval_dbound_radial_fqg_name(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, fqg_name1);
+    
+
+
+    // double e_muon_1 = 0.0;
+    // e_muon_1 = eval_dbound_radial(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, "psi_mu(x)");
+    // e_muon =  eval_dbound_radial_fqg_name(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, psi_mu_name);
+    // printf("%f\n", e_muon_1);
+    // print_fqgrid("psi_mu[+1](x)");
+    // print_fqgrid("psi_mu[-1](x)");
+
+
+    // printf("==============================================\n");
+    // e_muon_1 = eval_dbound_radial_fqg_name(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, fqg_name);
+    // e_muon_1 = eval_dbound_radial(znucl, rms_fm, inuclear_model, mmuon, n_muon, kappa_muon, "psi_mu(x)");
+    // printf("%f\n", e_muon_1);
+    // print_fqgrid("psi_mu1[+1](x)");
+
+
+
+
+    // double phase = eval_dfree_radial(znucl, rms_fm, inuclear_model, 1.0, 50-1.0, -1, "psi_e(x)");
+    // print_fqgrid("psi_e[+1](x)");
+
+    // phase = eval_dfree_radial(znucl, rms_fm, inuclear_model, 1.0, 50-1.0, -1, "psi_e(x)");
+    // print_fqgrid("psi_e[+1](x)");    
+    
+    // print_fqgrid_stack();
+
+    // exit(1);
 
     
     int nsub_e = options->nsub_e;
@@ -321,7 +370,6 @@ int bmuon_decay_onebody(void)
     qgrid_t* qgrid_e = new_qgrid((double[]){e_e_min, e_e_max}, 2, nsub_e, nqnode_e, "ee");
 
 
-    fqgrid_stack_pos_t pos_start = get_stack_pos();
 
 
     timer_new_entry("tot", "total time");
@@ -386,10 +434,12 @@ int bmuon_decay_onebody(void)
 
     restore_stack_pos(pos_start);
 
-    // print_fqgrid_stack();
+    print_fqgrid_stack();
 
     delete_qgrid(qgrid_e);
     delete_qgrid(qgrid_1);
+
+    delete_fqg_name(fqg_name_psi_mu);
 
 
 

@@ -1,0 +1,34 @@
+#ifndef FQG_NAME_TOKEN_TABLE_H_INCLUDED
+#define FQG_NAME_TOKEN_TABLE_H_INCLUDED
+
+enum {
+    /* token types */
+    TT_OPENING_PARANTHESIS = 10,
+    TT_CLOSING_PARANTHESIS = 11, 
+    TT_OPENING_BRACKETS = 12,
+    TT_CLOSING_BRACKETS = 13,
+    TT_OPENING_CURLY = 14,
+    TT_CLOSING_CURLY = 15,
+    TT_EQ = 16,
+    TT_PLUS = 30,
+    TT_MINUS = 29,
+    TT_COMMA = 17,    
+    TT_ASTERISK = 18,            
+    TT_WHITESPACE = 19,
+    TT_UNDERSCORE = 20,
+    TT_COLON = 21,
+    TT_IDENTIFIER = 0,
+    TT_ID_INFLEXION = 25,
+    TT_POUND = 26,
+    
+    TT_TYPE_DWF = 1,
+    TT_TYPE_SWF = 2,
+    TT_TYPE_DXG = 3,
+    TT_SUFFIX = 33,
+    TT_SUFFIX2 = 34,
+    TT_END_OF_FILE = 99,
+    TT_END_OF_LINE = 98,
+    TT_UNRECOGNIZED = 100   
+}; 
+
+#endif

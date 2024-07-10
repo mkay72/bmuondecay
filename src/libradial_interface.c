@@ -64,6 +64,16 @@ double eval_dbound_radial(int z, double rms_fm, int knu, double mass, int n, int
         push_fqgrid_stack(fqgrid_m1);
     }     
 
+    // print_fqgrid("psi_mu[+1](x)");
+    // print_qgrid(fqgrid_p1->qgrid[0]->name);
+    // printf("z = %d\n", z);
+    // printf("rms = %f\n", rms_fm);
+    // printf("knu = %d\n", knu);
+    // printf("mass = %f\n", mass);
+    // printf("n = %d\n", n);
+    // printf("kappa = %d\n", kappa);
+    // printf("%f\n", e_out);
+
     return e_out;
 }
 
@@ -126,5 +136,203 @@ double eval_dfree_radial(int z, double rms_fm, int knu, double mass, double e, i
         push_fqgrid_stack(fqgrid_m1);
     }     
 
+
+
     return phase;
 }
+
+
+
+
+
+
+
+
+
+double eval_dbound_radial_fqg_name(int z, double rms_fm, int knu, double mass, int n, int kappa, fqg_name_t* fqg_name)
+{
+    fqg_name_t fqg_name_deep_copy = *fqg_name;
+
+
+    // print_fqg_name(&fqg_name_deep_copy);
+
+    set_fqg_sys_suffix(&fqg_name_deep_copy, "[%+d]", 1);
+    fqgrid_t* fqg_p1 = new_fqgrid_from_fqg_name(&fqg_name_deep_copy);
+    
+    // printf("%s\n", fqg_name_deep_copy.name);
+    
+
+    // push_fqgrid_stack(fqg_p1);
+    // print_fqgrid(fqg_name_deep_copy.name);
+
+        // print_fqg_name(&fqg_name_deep_copy);
+
+
+    set_fqg_sys_suffix(&fqg_name_deep_copy, "[%+d]", -1);
+    fqgrid_t* fqg_m1 = new_fqgrid_from_fqg_name(&fqg_name_deep_copy);
+    // push_fqgrid_stack(fqg_m1);    
+
+    // print_fqg_name(&fqg_name_deep_copy);
+
+    // print_fqgrid_stack();
+
+
+    // char name_p1[FQGRID_MAX_NAME];
+    // char name_m1[FQGRID_MAX_NAME];
+    // append_suffix(name, "[+1]", name_p1);
+    // append_suffix(name, "[-1]", name_m1);
+
+    // fqgrid_t* fqgrid_p1 = new_fqgrid(name_p1);
+    // fqgrid_t* fqgrid_m1 = new_fqgrid(name_m1);
+    // if (fqgrid_p1->ndim != 1)
+    // {
+    //     printf("only for rank=1 fqgrid\n");
+    //     delete_fqgrid(fqgrid_p1);
+    //     delete_fqgrid(fqgrid_m1);
+    //     return 0.0;
+    // }
+
+    qgrid_t* qgrid = fqg_p1->qgrid[0];
+    int nqgrid = qgrid->n;
+
+
+    double dz = (double)z;
+    
+    double e_out = 0.0;
+    double psi_large[nqgrid];
+    double psi_small[nqgrid];
+
+    radial_dbound_(&dz, &rms_fm, &knu, &mass, 
+                   &n, &kappa, &nqgrid, qgrid->x, psi_large, psi_small, &e_out);
+
+
+    for (int i=0; i < nqgrid; i++)
+    {
+        *(fqg_p1->data + i) = psi_large[i];
+        *(fqg_m1->data + i) = psi_small[i];
+    }
+
+
+
+    if (find_fqgrid_stack(fqg_p1->name) != NULL) 
+    {
+        replace_stack_fqgrid(fqg_p1->name, fqg_p1);
+    }
+    else
+    {
+        push_fqgrid_stack(fqg_p1);
+    }
+
+    if (find_fqgrid_stack(fqg_m1->name) != NULL) 
+    {
+        replace_stack_fqgrid(fqg_m1->name, fqg_m1);
+    }
+    else
+    {
+        push_fqgrid_stack(fqg_m1);
+    }
+
+
+    // print_fqgrid("dwf:psi_mu#[+1]#(x)");
+    // print_qgrid(fqg_p1->qgrid[0]->name);
+    // printf("z = %d\n", z);
+    // printf("rms = %f\n", rms_fm);
+    // printf("knu = %d\n", knu);
+    // printf("mass = %f\n", mass);
+    // printf("n = %d\n", n);
+    // printf("kappa = %d\n", kappa);
+    // printf("%f\n", e_out);
+
+    return e_out;
+}
+
+
+
+double eval_dfree_radial_fqg_name(int z, double rms_fm, int knu, double mass, double e, int kappa, fqg_name_t* fqg_name)
+{
+    fqg_name_t fqg_name_deep_copy = *fqg_name;
+
+
+    // print_fqg_name(&fqg_name_deep_copy);
+
+    set_fqg_sys_suffix(&fqg_name_deep_copy, "[%+d]", 1);
+    fqgrid_t* fqg_p1 = new_fqgrid_from_fqg_name(&fqg_name_deep_copy);
+    
+    // printf("%s\n", fqg_name_deep_copy.name);
+    
+
+    // push_fqgrid_stack(fqg_p1);
+    // print_fqgrid(fqg_name_deep_copy.name);
+
+        // print_fqg_name(&fqg_name_deep_copy);
+
+
+    set_fqg_sys_suffix(&fqg_name_deep_copy, "[%+d]", -1);
+    fqgrid_t* fqg_m1 = new_fqgrid_from_fqg_name(&fqg_name_deep_copy);
+    // push_fqgrid_stack(fqg_m1);    
+
+    // print_fqg_name(&fqg_name_deep_copy);
+
+    // print_fqgrid_stack();
+
+
+    // char name_p1[FQGRID_MAX_NAME];
+    // char name_m1[FQGRID_MAX_NAME];
+    // append_suffix(name, "[+1]", name_p1);
+    // append_suffix(name, "[-1]", name_m1);
+
+    // fqgrid_t* fqgrid_p1 = new_fqgrid(name_p1);
+    // fqgrid_t* fqgrid_m1 = new_fqgrid(name_m1);
+    // if (fqgrid_p1->ndim != 1)
+    // {
+    //     printf("only for rank=1 fqgrid\n");
+    //     delete_fqgrid(fqgrid_p1);
+    //     delete_fqgrid(fqgrid_m1);
+    //     return 0.0;
+    // }
+
+    qgrid_t* qgrid = fqg_p1->qgrid[0];
+    int nqgrid = qgrid->n;
+
+
+    double dz = (double)z;
+    
+    double phase = 0.0;
+    double psi_large[nqgrid];
+    double psi_small[nqgrid];
+
+    radial_dfree_(&dz, &rms_fm, &knu, &mass, 
+                   &e, &kappa, &nqgrid, qgrid->x, psi_large, psi_small, &phase);
+
+
+    for (int i=0; i < nqgrid; i++)
+    {
+        *(fqg_p1->data + i) = psi_large[i];
+        *(fqg_m1->data + i) = psi_small[i];
+    }
+
+
+
+    if (find_fqgrid_stack(fqg_p1->name) != NULL) 
+    {
+        replace_stack_fqgrid(fqg_p1->name, fqg_p1);
+    }
+    else
+    {
+        push_fqgrid_stack(fqg_p1);
+    }
+
+    if (find_fqgrid_stack(fqg_m1->name) != NULL) 
+    {
+        replace_stack_fqgrid(fqg_m1->name, fqg_m1);
+    }
+    else
+    {
+        push_fqgrid_stack(fqg_m1);
+    }
+
+
+
+    return phase;
+}
+

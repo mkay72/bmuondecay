@@ -7,11 +7,17 @@
 #include "error_handler.h"
 #include "fqgrid_stack.h"
 
+#include "fqg_name.h"
+
 
 fqgrid_t* new_fqgrid(char* name)
 {
     fqgrid_t* fqgrid = (fqgrid_t*) malloc(1 * sizeof(fqgrid_t));
-    strncpy(fqgrid->name, name, FQGRID_MAX_NAME);
+
+    // printf("%s\n", name);
+    // fqg_name_t* fqg_name = new_fqg_name(name);
+
+    strncpy(fqgrid->name, name, FQGRID_MAX_NAME-1);
     fqgrid->name[FQGRID_MAX_NAME - 1] = '\0';
 
     determine_qgrid(fqgrid);
@@ -25,6 +31,29 @@ fqgrid_t* new_fqgrid(char* name)
 
 }
 
+
+fqgrid_t* new_fqgrid_from_fqg_name(fqg_name_t* fqg_name)
+{
+    fqgrid_t* fqgrid = (fqgrid_t*) malloc(1 * sizeof(fqgrid_t));
+
+    // printf("%s\n", name);
+    // fqg_name_t* fqg_name = new_fqg_name(name);
+
+    strncpy(fqgrid->name, fqg_name->name, FQGRID_MAX_NAME-2);
+    fqgrid->name[FQGRID_MAX_NAME - 1] = '\0';
+
+    // determine_qgrid(fqgrid);
+
+    determine_qgrid_from_fqg_name(fqgrid, fqg_name);
+
+
+    fqgrid->data = (double complex*) calloc(fqgrid->size_tot, sizeof(double complex));
+    fqgrid->id = get_unique_id_fqgird();
+
+    
+    return fqgrid;
+
+}
 
 
 void delete_fqgrid(fqgrid_t* fqgrid)
@@ -72,6 +101,49 @@ void determine_qgrid(fqgrid_t* fqgrid)
         size_tot *= fqgrid->size[iarg];
 
         free(args[iarg]);
+    }
+    fqgrid->size_tot = size_tot;
+
+}
+
+
+void determine_qgrid_from_fqg_name(fqgrid_t* fqgrid, fqg_name_t* fqg_name)
+{
+
+    // bool is_name_valid = check_name(fqgrid->name);
+
+    // int nargs = count_nargs(fqgrid->name);
+    // char *args[nargs];
+
+    // parse_args(fqgrid->name, nargs, args);
+
+
+    int nargs = 0;
+    for (int i = 0; i < 2; i++)
+    {
+        if (strlen(fqg_name->inflexion[i]) > 0)
+        {
+            nargs++;
+        }
+    }
+
+    fqgrid->ndim = nargs;
+    fqgrid->size = (int*) malloc(nargs * sizeof(int));
+    fqgrid->qgrid = (qgrid_t**) malloc(nargs * sizeof(qgrid_t*));
+
+    int size_tot = 1;
+    for (int iarg=0; iarg < nargs; iarg++)
+    {
+        fqgrid->qgrid[iarg] = find_qgrid_stack(fqg_name->inflexion[iarg]);
+        if (fqgrid->qgrid[iarg] == NULL)
+        {
+            error_handler("in determine_qgrid();\nCould not associate fqgrid `%s' with qgrid `%s';\n \
+                           qgrid `%s' is abscent in the qgrid stack", fqgrid->name, fqg_name->inflexion[iarg], fqg_name->inflexion[iarg]);
+        }
+        fqgrid->size[iarg] = fqgrid->qgrid[iarg]->n;
+        size_tot *= fqgrid->size[iarg];
+
+        // free(args[iarg]);
     }
     fqgrid->size_tot = size_tot;
 
